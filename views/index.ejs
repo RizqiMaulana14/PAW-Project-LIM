@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <%- include('partials/head') %>
+</head>
+<body>
+  <%- include('partials/navbar') %>
+
+  <div class="container">
+    <header class="app-header">
+      <h1 class="app-title">Katalog Koleksi Buku</h1>
+      <p class="app-subtitle">Cari dan jelajahi ketersediaan buku perpustakaan secara real-time</p>
+    </header>
+
+    <form action="/" method="GET" class="search-box">
+      <input 
+        type="text" 
+        id="searchInput"
+        name="search" 
+        placeholder="Cari judul buku, penulis, atau kategori..." 
+        value="<%= typeof query !== 'undefined' ? query : '' %>"
+      >
+      <button type="submit" id="searchBtn">Cari</button>
+    </form>
+
+    <div class="book-grid" id="bookGrid">
+      <% if (typeof books !== 'undefined' && books && books.length > 0) { %>
+        <% books.forEach(book => { %>
+          <div class="card">
+            <div class="book-cover-wrapper">
+              <div class="book-cover">
+                <span class="book-cover-category"><%= book.category %></span>
+                <h4 class="book-cover-title"><%= book.title %></h4>
+                <span class="book-cover-author"><%= book.author %></span>
+              </div>
+            </div>
+
+            <div class="card-body">
+              <div class="card-content">
+                <h3><%= book.title %></h3>
+                <p class="card-meta"><strong>Penulis:</strong> <%= book.author %></p>
+                <p class="card-meta"><strong>Kategori:</strong> <%= book.category %></p>
+                <p class="card-desc"><%= book.description %></p>
+              </div>
+
+              <div class="card-footer">
+                <% if (book.status === 'Tersedia') { %>
+                  <span class="badge badge-available">
+                    <span class="badge-dot"></span> Tersedia
+                  </span>
+                <% } else { %>
+                  <span class="badge badge-borrowed">
+                    <span class="badge-dot"></span> Dipinjam
+                  </span>
+                <% } %>
+              </div>
+            </div>
+          </div>
+        <% }); %>
+      <% } else { %>
+        <div class="no-data">
+          <p>Buku tidak ditemukan.</p>
+        </div>
+      <% } %>
+    </div>
+  </div>
+
+  <script src="/index.js"></script>
+</body>
+</html>
