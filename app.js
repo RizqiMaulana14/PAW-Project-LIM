@@ -3,10 +3,13 @@ import 'dotenv/config';
 import path from 'path';
 import apiRoutes from './routes/apiRoutes.js';
 import { getHome } from './controllers/apiControllers.js';
+import logger from './middlewares/logger.js';
 
 const __dirname = import.meta.dirname;
 
 const app = express();
+
+app.use(logger)
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
