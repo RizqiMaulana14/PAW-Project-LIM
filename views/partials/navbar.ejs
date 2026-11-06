@@ -1,13 +1,79 @@
-<nav class="navbar">
-  <div class="nav-container">
-    <a href="/" class="nav-brand">
-      <span class="nav-logo">LIM</span>
-      <span class="nav-tagline">Library Integrated Management</span>
-    </a>
-    <div class="nav-links">
-      <a href="/" class="nav-link active">Katalog</a>
-      <a href="/api/status" target="_blank" class="nav-link">Status API</a>
-      <a href="/api/books" target="_blank" class="nav-link">Data API</a>
+<!-- Sidebar Navigasi Pustaka -->
+<aside class="w-full md:w-64 bg-white border-r border-slate-200/90 flex flex-col justify-between p-5 md:min-h-screen shrink-0">
+
+  <div class="space-y-6">
+    <!-- Brand Header -->
+    <div class="flex items-center space-x-3">
+      <div class="w-10 h-10 rounded-xl bg-slate-200 flex items-center justify-center text-slate-700 font-bold shadow-sm">
+        <i class="fa-solid fa-book-bookmark text-base"></i>
+      </div>
+      <div>
+        <h2 class="font-extrabold text-base tracking-tight text-slate-900 font-heading">Pustaka</h2>
+        <p class="text-[11px] text-slate-400 font-medium">Ruang baca digital • LIM</p>
+      </div>
+    </div>
+
+    <!-- Nav Menu List -->
+    <nav class="space-y-1.5 text-sm font-medium">
+      <div class="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-slate-100 text-slate-900 font-semibold">
+        <div class="flex items-center space-x-3">
+          <i class="fa-regular fa-compass w-4 text-center"></i>
+          <span>Katalog</span>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors cursor-default">
+        <div class="flex items-center space-x-3">
+          <i class="fa-regular fa-calendar-check w-4 text-center"></i>
+          <span>Log Peminjaman</span>
+        </div>
+        <span class="w-5 h-5 rounded-full bg-slate-900 text-white text-[11px] font-bold flex items-center justify-center font-mono">
+          2
+        </span>
+      </div>
+
+      <div class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors cursor-default">
+        <div class="flex items-center space-x-3">
+          <i class="fa-regular fa-calendar-days w-4 text-center"></i>
+          <span>Jadwal &amp; Pinjam</span>
+        </div>
+      </div>
+
+      <!-- REST API Console -->
+      <button id="openApiConsoleBtn" onclick="openApiTesterModal()" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors text-left cursor-pointer">
+        <div class="flex items-center space-x-3">
+          <i class="fa-solid fa-terminal w-4 text-center text-blue-600"></i>
+          <span>REST API Console</span>
+        </div>
+        <span class="text-[10px] px-1.5 py-0.5 rounded bg-blue-50 text-blue-600 font-bold border border-blue-200">Week 7</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- Bottom: Promo & User Profile -->
+  <div class="space-y-4 pt-6 border-t border-slate-100">
+    <!-- AI Promo Box -->
+    <div class="bg-slate-100/90 rounded-2xl p-4 border border-slate-200/80">
+      <h4 class="text-xs font-bold text-slate-900 mb-1">Temukan bacaan baru</h4>
+      <p class="text-[11px] text-slate-500 leading-relaxed mb-3">
+        Biarkan Pustaka AI memilih buku yang cocok untukmu.
+      </p>
+      <div class="w-full py-2 px-3 rounded-xl bg-slate-900 text-white text-xs font-semibold shadow-sm flex items-center justify-center space-x-1.5 cursor-default">
+        <i class="fa-solid fa-wand-magic-sparkles text-[10px] text-amber-300"></i>
+        <span>Tanya AI</span>
+      </div>
+    </div>
+
+    <!-- User Profile -->
+    <div class="flex items-center space-x-3 pt-2">
+      <div class="w-9 h-9 rounded-full bg-slate-300 text-slate-700 flex items-center justify-center font-bold text-xs uppercase">
+        NA
+      </div>
+      <div class="leading-tight">
+        <h5 class="text-xs font-bold text-slate-900">Naya Aulia</h5>
+        <p class="text-[11px] text-slate-400">Mahasiswa</p>
+      </div>
     </div>
   </div>
-</nav>
+
+</aside>
