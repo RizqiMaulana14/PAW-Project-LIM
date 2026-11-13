@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <%- include('partials/head') %>
+</head>
+<body class="bg-[#f8f9fa] text-slate-800 font-sans antialiased selection:bg-slate-900 selection:text-white min-h-screen">
+
+  <div class="flex flex-col md:flex-row min-h-screen">
+    <!-- Sidebar Navigasi -->
+    <%- include('partials/sidebar') %>
+
+    <!-- Konten Utama: 2 · Jadwal & Form Peminjaman -->
+    <main class="flex-grow p-6 sm:p-10 lg:p-12 max-w-7xl mx-auto w-full space-y-8">
+      
+      <!-- Breadcrumb & Header -->
+      <div class="space-y-3">
+        <nav class="flex items-center space-x-2 text-xs text-slate-400">
+          <a href="/katalog" class="hover:text-slate-700 transition-colors">Katalog</a>
+          <span>/</span>
+          <span class="text-slate-800 font-medium truncate max-w-xs"><%= book.nama || book.title %></span>
+        </nav>
+
+        <div>
+          <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight font-heading">
+            Jadwal & Peminjaman
+          </h1>
+          <p class="text-sm text-slate-500 mt-1">
+            Cek ketersediaan real-time, lalu pilih tanggal pinjam.
+          </p>
+        </div>
+      </div>
+
+      <!-- 3-Column Layout Sesuai Wireframe -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        <!-- KOLOM 1: Info Buku (lg:col-span-3) -->
+        <div class="lg:col-span-3 bg-white border border-slate-200/90 rounded-2xl p-5 shadow-sm space-y-4">
+          <!-- Cover Box -->
+          <div class="h-56 rounded-xl <%= book.coverBg || 'bg-slate-100' %> p-4 flex flex-col justify-between border border-slate-100 relative">
+            <div class="flex justify-start">
+              <% if (book.status === 'Tersedia') { %>
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-sm">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span>
+                  Tersedia
+                </span>
+              <% } else { %>
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-500 border border-slate-200 shadow-sm">
+                  <span class="w-1.5 h-1.5 rounded-full bg-slate-400 mr-1.5"></span>
+                  Dipinjam
+                </span>
+              <% } %>
+            </div>
+
+            <div class="text-center my-auto">
+              <span class="text-xs text-slate-400 font-mono tracking-widest uppercase">Cover Buku</span>
+            </div>
+
+            <div class="text-[10px] text-slate-500 font-mono">
+              <%= book.id %> • <%= book.lokasiRak || 'Rak Umum' %>
+            </div>
+          </div>
+
+          <!-- Detail Judul & Penulis -->
+          <div class="space-y-1">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
+              <%= book.kategori || book.category %>
+            </span>
+            <h2 class="text-base font-bold text-slate-900 leading-snug">
+              <%= book.nama || book.title %>
+            </h2>
+            <p class="text-xs text-slate-500">
+              <%= book.penulis || book.author %>
+            </p>
+          </div>
+
+          <!-- Sinopsis Singkat -->
+          <div class="pt-3 border-t border-slate-100">
+            <p class="text-xs text-slate-500 leading-relaxed line-clamp-4">
+              <%= book.deskripsi || book.description %>
+            </p>
+          </div>
+
+          <!-- Card AI Info Helper -->
+          <div class="pt-3 border-t border-slate-100 space-y-2">
+            <p class="text-[11px] text-slate-400 font-medium">Perlu info detail buku?</p>
+            <button 
+              onclick="askAiAboutBook('<%= book.nama || book.title %>')" 
+              class="w-full py-2 px-3 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors flex items-center justify-center space-x-1.5"
+            >
+              <i class="fa-solid fa-wand-magic-sparkles text-amber-500 text-[11px]"></i>
+              <span>Tanya Pustaka AI</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- KOLOM 2: Kalender Ketersediaan Real-Time (lg:col-span-5) -->
+        <div class="lg:col-span-5 bg-white border border-slate-200/90 rounded-2xl p-5 shadow-sm space-y-5">
+          <!-- Calendar Header -->
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-bold text-slate-900">Ketersediaan real-time</h3>
+            <div class="flex items-center space-x-1.5 text-xs text-slate-500 font-medium">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span class="text-[11px]">Live</span>
+            </div>
+          </div>
+
+          <!-- Month Selector -->
+          <div class="flex items-center justify-between px-2 text-xs font-bold text-slate-700">
+            <button class="p-1 hover:text-slate-900"><i class="fa-solid fa-chevron-left"></i></button>
+            <span class="text-sm font-heading">Juni 2025</span>
+            <button class="p-1 hover:text-slate-900"><i class="fa-solid fa-chevron-right"></i></button>
+          </div>
+
+          <!-- Grid Kalender -->
+          <div class="space-y-2">
+            <!-- Nama Hari -->
+            <div class="grid grid-cols-7 gap-1 text-center text-[11px] font-semibold text-slate-400 pb-1 border-b border-slate-100">
+              <span>Min</span>
+              <span>Sen</span>
+              <span>Sel</span>
+              <span>Rab</span>
+              <span>Kam</span>
+              <span>Jum</span>
+              <span>Sab</span>
+            </div>
+
+            <!-- Hari-hari Juni 2025 (1 - 30) -->
+            <div class="grid grid-cols-7 gap-1 text-center text-xs" id="calendarDaysGrid">
+              <!-- Minggu 1 -->
+              <span class="p-2 text-slate-700 rounded-lg hover:bg-slate-50 cursor-pointer">1</span>
+              <span class="p-2 text-slate-700 rounded-lg hover:bg-slate-50 cursor-pointer">2</span>
+              <span class="p-2 text-slate-700 rounded-lg hover:bg-slate-50 cursor-pointer">3</span>
+              <span class="p-2 text-slate-700 rounded-lg hover:bg-slate-50 cursor-pointer">4</span>
+              <span class="p-2 text-slate-700 rounded-lg hover:bg-slate-50 cursor-pointer">5</span>
+              <span class="p-2 text-slate-700 rounded-lg hover:bg-slate-50 cursor-pointer">6</span>
+              <span class="p-2 text-slate-700 rounded-lg hover:bg-slate-50 cursor-pointer">7</span>
+
+              <!-- Minggu 2 -->
+              <span class="p-2 text-slate-700 rounded-lg hover:bg-slate-50 cursor-pointer">8</span>
+              <span class="p-2 text-slate-700 rounded-lg hover:bg-slate-50 cursor-pointer">9</span>
+              <span class="p-2 text-slate-700 rounded-lg hover:bg-slate-50 cursor-pointer">10</span>
+              <span class="p-2 text-slate-400 line-through rounded-lg bg-slate-100/70" title="Sudah dipinjam">11</span>
+              
+              <!-- Rentang Dipilih (12 - 19 Juni 2025) Sesuai Wireframe -->
+              <span class="p-2 bg-slate-900 text-white font-bold rounded-l-lg" title="Mulai pinjam">12</span>
+              <span class="p-2 bg-slate-800 text-white font-medium">13</span>
+              <span class="p-2 bg-slate-800 text-white font-medium">14</span>
+
+              <!-- Minggu 3 -->
+              <span class="p-2 bg-slate-800 text-white font-medium">15</span>
+              <span class="p-2 bg-slate-800 text-white font-medium">16</span>
+              <span class="p-2 bg-slate-800 text-white font-medium">17</span>
+              <span class="p-2 bg-slate-800 text-white font-medium">18</span>
+              <span class="p-2 bg-slate-900 text-white font-bold rounded-r-lg" title="Selesai pinjam">19</span>
+              <span class="p-2 text-slate-700 rounded-lg hover:bg-slate-50 cursor-pointer">20</span>
+              <span class="p-2 text-slate-700 rounded-lg hover:bg-slate-50 cursor-pointer">21</span>
+
+              <!-- Minggu 4 -->
+              <span class="p-2 text-slate-700 rounded-lg hover:bg-slate-50 cursor-pointer">22</span>
+              <span class="p-2 text-slate-700 rounded-lg hover:bg-slate-50 cursor-pointer">23</span>
+              <span class="p-2 text-slate-700 rounded-lg hover:bg-slate-50 cursor-pointer">24</span>
+              <span class="p-2 text-slate-700 rounded-lg hover:bg-slate-50 cursor-pointer">25</span>
+              <span class="p-2 text-slate-700 rounded-lg hover:bg-slate-50 cursor-pointer">26</span>
+              <span class="p-2 text-slate-700 rounded-lg hover:bg-slate-50 cursor-pointer">27</span>
+              <span class="p-2 text-slate-700 rounded-lg hover:bg-slate-50 cursor-pointer">28</span>
+
+              <!-- Minggu 5 -->
+              <span class="p-2 text-slate-700 rounded-lg hover:bg-slate-50 cursor-pointer">29</span>
+              <span class="p-2 text-slate-700 rounded-lg hover:bg-slate-50 cursor-pointer">30</span>
+              <span class="p-2 text-slate-300">1</span>
+              <span class="p-2 text-slate-300">2</span>
+              <span class="p-2 text-slate-300">3</span>
+              <span class="p-2 text-slate-300">4</span>
+              <span class="p-2 text-slate-300">5</span>
+            </div>
+          </div>
+
+          <!-- Legenda Tanggal (Sesuai Wireframe) -->
+          <div class="pt-4 border-t border-slate-100 grid grid-cols-2 sm:grid-cols-4 gap-2 text-[10px] text-slate-500">
+            <div class="flex items-center space-x-1.5">
+              <span class="w-2.5 h-2.5 rounded bg-white border border-slate-300 inline-block"></span>
+              <span>Tersedia</span>
+            </div>
+            <div class="flex items-center space-x-1.5">
+              <span class="w-2.5 h-2.5 rounded bg-slate-200 inline-block"></span>
+              <span>Sudah dipinjam</span>
+            </div>
+            <div class="flex items-center space-x-1.5">
+              <span class="w-2.5 h-2.5 rounded bg-slate-900 inline-block"></span>
+              <span>Dipilih</span>
+            </div>
+            <div class="flex items-center space-x-1.5">
+              <span class="w-2.5 h-2.5 rounded-full border border-blue-500 inline-block"></span>
+              <span>Hari ini</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- KOLOM 3: Form Peminjaman (lg:col-span-4) -->
+        <div class="lg:col-span-4 bg-white border border-slate-200/90 rounded-2xl p-5 shadow-sm space-y-5">
+          <div>
+            <h3 class="text-sm font-bold text-slate-900">Form Peminjaman</h3>
+            <p class="text-xs text-slate-400 mt-0.5">Lengkapi data untuk booking buku</p>
+          </div>
+
+          <form id="borrowForm" onsubmit="handleConfirmBorrow(event)" class="space-y-4 text-xs">
+            <!-- Hidden Book ID -->
+            <input type="hidden" id="borrowBookId" value="<%= book.id %>">
+
+            <!-- Field 1: Judul Buku (Read Only) -->
+            <div class="space-y-1.5">
+              <label class="font-semibold text-slate-700">Judul buku</label>
+              <input 
+                type="text" 
+                readonly 
+                value="<%= book.nama || book.title %>" 
+                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-700 cursor-not-allowed"
+              >
+            </div>
+
+            <!-- Field 2: Tanggal Mulai -->
+            <div class="space-y-1.5">
+              <label class="font-semibold text-slate-700">Tanggal mulai</label>
+              <div class="relative">
+                <input 
+                  type="text" 
+                  id="borrowStartDate" 
+                  value="12 Juni 2025" 
+                  class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-800 font-medium focus:outline-none focus:ring-1 focus:ring-slate-900"
+                >
+                <i class="fa-regular fa-calendar absolute right-3.5 top-3 text-slate-400 pointer-events-none"></i>
+              </div>
+            </div>
+
+            <!-- Field 3: Tanggal Pengembalian -->
+            <div class="space-y-1.5">
+              <label class="font-semibold text-slate-700">Tanggal pengembalian</label>
+              <div class="relative">
+                <input 
+                  type="text" 
+                  id="borrowEndDate" 
+                  value="19 Juni 2025" 
+                  class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-800 font-medium focus:outline-none focus:ring-1 focus:ring-slate-900"
+                >
+                <i class="fa-regular fa-calendar absolute right-3.5 top-3 text-slate-400 pointer-events-none"></i>
+              </div>
+            </div>
+
+            <!-- Info Maks Peminjaman -->
+            <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-[11px] text-slate-500 leading-relaxed">
+              Maks. peminjaman 14 hari. Jadwal divalidasi otomatis.
+            </div>
+
+            <!-- Warning Alert Jadwal Bentrok (Sesuai Wireframe Mockup) -->
+            <div id="conflictAlert" class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-[11px] text-amber-800 leading-relaxed hidden">
+              <i class="fa-solid fa-triangle-exclamation mr-1 text-amber-600"></i>
+              <strong>Jadwal bentrok.</strong> Buku telah dipinjam pengguna lain pada 18–22 Juni 2025.
+            </div>
+
+            <!-- Tombol Konfirmasi Peminjaman -->
+            <button 
+              type="submit" 
+              id="btnConfirmBorrow"
+              class="w-full py-3 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold shadow-sm transition-all flex items-center justify-center space-x-2 text-xs"
+            >
+              <span>Konfirmasi peminjaman</span>
+              <i class="fa-solid fa-arrow-right text-[11px]"></i>
+            </button>
+          </form>
+
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Floating AI Chatbot Widget -->
+  <%- include('partials/aiChatbot') %>
+
+  <!-- Modal REST API Console Week 7 -->
+  <%- include('partials/apiModal') %>
+
+  <!-- Toast Notifikasi Sukses -->
+  <div id="toastNotification" class="fixed top-5 right-5 z-50 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center space-x-3 text-xs hidden transition-all">
+    <i class="fa-solid fa-circle-check text-emerald-400 text-base"></i>
+    <div>
+      <h5 class="font-bold">Buku berhasil dipinjam!</h5>
+      <p class="text-slate-300 text-[11px]">Kalender diperbarui & buku muncul di Log Peminjaman.</p>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="/index.js"></script>
+</body>
+</html>

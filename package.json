@@ -1,17 +1,24 @@
 {
   "name": "lim",
   "version": "1.0.0",
-  "description": "",
+  "description": "Library Integrated Management (LIM) - PPAW Week 7 Kelompok 2",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev" : "node app.js"
+    "start": "node app.js",
+    "dev": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/RizqiMaulana14/PAW-Project-LIM.git"
   },
-  "keywords": [],
+  "keywords": [
+    "paw",
+    "express",
+    "ejs",
+    "rest-api",
+    "middleware-logger"
+  ],
   "type": "module",
   "bugs": {
     "url": "https://github.com/RizqiMaulana14/PAW-Project-LIM/issues"
@@ -20,6 +27,7 @@
   "dependencies": {
     "dotenv": "^18.0.9",
     "ejs": "^7.0.2",
-    "express": "^5.3.0"
+    "express": "^5.3.0",
+    "mysql2": "^3.24.6"
   }
 }
