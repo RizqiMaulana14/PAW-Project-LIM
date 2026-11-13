@@ -1,9 +1,3 @@
-/**
- * API Controller - Mengelola request dan response endpoint REST API CRUD
- * Sesuai arsitektur MVC - Folder controllers/
- * Terhubung langsung ke database MySQL melalui ProductModel & LoanModel
- */
-
 import { ProductModel } from '../models/productModel.js';
 import { LoanModel } from '../models/loanModel.js';
 import { appConfig } from '../config/appConfig.js';
@@ -316,51 +310,10 @@ export const cancelPeminjaman = async (req, res) => {
 };
 
 /**
- * POST /api/ai/chat
- */
-export const aiChat = async (req, res) => {
-  try {
-    const { message = '' } = req.body;
-    const q = message.toLowerCase().trim();
-
-    let reply = '';
-    let relatedBook = null;
-
-    if (q.includes('laut bercerita') || q.includes('sinopsis laut')) {
-      relatedBook = await ProductModel.getById('BOK-001');
-      reply = `Kisah aktivis mahasiswa era 1998 yang diculik dan keluarga yang mencari jawaban atas kehilangan mereka. Ditulis oleh Leila S. Chudori dengan gaya penceritaan yang sangat emosional dan mendalam.`;
-    } else if (q.includes('atomic habits') || q.includes('kebiasaan')) {
-      relatedBook = await ProductModel.getById('BOK-003');
-      reply = `Buku best-seller oleh James Clear tentang bagaimana perubahan 1% setiap hari secara konsisten dapat membentuk kebiasaan luar biasa.`;
-    } else if (q.includes('bumi manusia') || q.includes('pramoedya')) {
-      relatedBook = await ProductModel.getById('BOK-004');
-      reply = `Mahakarya sastra Indonesia oleh Pramoedya Ananta Toer berlatar Hindia Belanda awal abad 20, mengisahkan Minke dan Nyai Ontosoroh.`;
-    } else if (q.includes('rekomendasi') || q.includes('teknologi') || q.includes('coding') || q.includes('web')) {
-      reply = `Untuk topik teknologi, saya rekomendasikan:\n1. "Pemrograman Multiplatform dengan Flutter dan Dart"\n2. "Kecerdasan Buatan & Machine Learning Modern"\n3. "Arsitektur Software Modern & Microservices"`;
-    } else if (q.includes('jadwal') || q.includes('pinjam') || q.includes('antre')) {
-      reply = `Kamu bisa langsung cek jadwal ketersediaan real-time di tombol "Jadwal" pada kartu buku, lalu tentukan tanggal peminjaman tanpa perlu antre di loket perpustakaan.`;
-    } else {
-      reply = `Halo! Saya Pustaka AI. Saya siap membantu kamu mencari rekomendasi buku, mengecek sinopsis, atau melihat jadwal ketersediaan buku di perpustakaan. Coba tanyakan misalnya: "Sinopsis Laut Bercerita" atau "Rekomendasi buku teknologi"!`;
-    }
-
-    res.status(200).json({
-      status: 'success',
-      model: 'Ollama DeepSeek-v2',
-      response: reply,
-      relatedBook
-    });
-  } catch (err) {
-    res.status(500).json({
-      status: 'error',
-      message: 'Gagal memproses pesan AI.',
-      error: err.message
-    });
-  }
-};
-
-/**
  * Alias kompatibilitas
  */
+
+
 export const getBooks = getProduk;
 export const createBook = createProduk;
 export const updateBook = updateProduk;

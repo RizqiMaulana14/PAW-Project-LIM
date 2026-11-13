@@ -79,18 +79,6 @@
               <%= book.deskripsi || book.description %>
             </p>
           </div>
-
-          <!-- Card AI Info Helper -->
-          <div class="pt-3 border-t border-slate-100 space-y-2">
-            <p class="text-[11px] text-slate-400 font-medium">Perlu info detail buku?</p>
-            <button 
-              onclick="askAiAboutBook('<%= book.nama || book.title %>')" 
-              class="w-full py-2 px-3 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors flex items-center justify-center space-x-1.5"
-            >
-              <i class="fa-solid fa-wand-magic-sparkles text-amber-500 text-[11px]"></i>
-              <span>Tanya Pustaka AI</span>
-            </button>
-          </div>
         </div>
 
         <!-- KOLOM 2: Kalender Ketersediaan Real-Time (lg:col-span-5) -->
@@ -274,9 +262,6 @@
 
     </main>
   </div>
-
-  <!-- Floating AI Chatbot Widget -->
-  <%- include('partials/aiChatbot') %>
 
   <!-- Modal REST API Console Week 7 -->
   <%- include('partials/apiModal') %>

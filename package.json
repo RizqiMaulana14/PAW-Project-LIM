@@ -1,7 +1,7 @@
 {
   "name": "lim",
   "version": "1.0.0",
-  "description": "Library Integrated Management (LIM) - PPAW Week 7 Kelompok 2",
+  "description": "Library Integrated Management (LIM) - Aplikasi manajemen perpustakaan berbasis web menggunakan Node.js, Express, EJS, dan MySQL.",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",

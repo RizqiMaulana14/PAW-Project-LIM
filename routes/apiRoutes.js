@@ -14,8 +14,7 @@ import {
   getKategori,
   getPeminjaman,
   createPeminjaman,
-  cancelPeminjaman,
-  aiChat
+  cancelPeminjaman
 } from '../controllers/apiControllers.js';
 
 const router = express.Router();
@@ -55,10 +54,6 @@ router.get('/peminjaman', getPeminjaman);
 router.post('/peminjaman', createPeminjaman);
 router.delete('/peminjaman/:id', cancelPeminjaman);
 
-/**
- * Pustaka AI Assistant Endpoint
- */
-router.post('/ai/chat', aiChat);
 
 /**
  * Rute Kompatibilitas Alias (/api/books)

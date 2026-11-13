@@ -1,9 +1,3 @@
-/**
- * Model Data Log Peminjaman Buku (Pustaka LIM)
- * Sesuai arsitektur MVC - Folder models/
- * Mengelola data peminjaman buku berbasis database MySQL (Tabel peminjaman)
- */
-
 import { pool } from '../config/db.js';
 import { ProductModel } from './productModel.js';
 
