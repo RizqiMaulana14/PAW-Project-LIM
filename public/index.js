@@ -1,26 +1,18 @@
-/**
- * Frontend JavaScript - Pustaka LIM (Library Integrated Management)
- * Mendukung Operasi CRUD Penuh (Create, Read, Update, Delete) ke Database MySQL,
- * Pencarian Real-time, Kalender Interaktif, Log Peminjaman, dan REST API Console.
- */
-
+// Logika frontend interaktif dan pencarian
 let allBooks = [];
-let pendingDeleteId = null;
 let pendingCancelLoanId = null;
 
-// Mengambil seluruh data produk dari endpoint GET /api/produk (Database MySQL)
+// Mengambil seluruh data produk dari backend database
 async function loadBooksData() {
   try {
     const res = await fetch('/api/produk');
     allBooks = await res.json();
   } catch (err) {
-    console.error('Gagal memuat produk dari API database:', err);
+    console.error('Gagal memuat data buku:', err);
   }
 }
 
-// ========================================================================
-// 1. PENCARIAN REAL-TIME & FILTER KATALOG
-// ========================================================================
+// 1. Pencarian real-time dan filter katalog
 function setupLiveSearch() {
   const searchInput = document.getElementById('searchInput');
   const bookGrid = document.getElementById('bookGrid');
@@ -110,7 +102,7 @@ function renderKatalogCards(booksList) {
           <p class="text-xs text-slate-400 truncate">${book.penulis || book.author}</p>
         </div>
 
-        <div class="grid grid-cols-2 gap-2 pt-1 border-t border-slate-100 mb-2">
+        <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100">
           <a href="/jadwal/${book.id}" class="py-2 px-3 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-semibold text-center transition-colors">
             Jadwal
           </a>
@@ -124,244 +116,12 @@ function renderKatalogCards(booksList) {
           }
         </div>
 
-        <div class="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
-          <button 
-            onclick="openEditModal('${book.id}')" 
-            class="px-2.5 py-1 rounded-lg text-slate-600 hover:text-blue-600 hover:bg-blue-50 border border-slate-200/80 transition-colors flex items-center space-x-1"
-          >
-            <i class="fa-regular fa-pen-to-square text-[11px]"></i>
-            <span class="text-[11px] font-medium">Ubah</span>
-          </button>
-
-          <button 
-            onclick="openDeleteModal('${book.id}', '${safeTitle}')" 
-            class="px-2.5 py-1 rounded-lg text-slate-500 hover:text-rose-600 hover:bg-rose-50 border border-slate-200/80 transition-colors flex items-center space-x-1"
-          >
-            <i class="fa-regular fa-trash-can text-[11px]"></i>
-            <span class="text-[11px] font-medium">Hapus</span>
-          </button>
-        </div>
-
       </div>
     `;
   }).join('');
 }
 
-// ========================================================================
-// 2. OPERASI CRUD: CREATE (TAMBAH BUKU BARU KE DATABASE)
-// ========================================================================
-function openAddModal() {
-  const modal = document.getElementById('modalAddProduct');
-  if (modal) modal.classList.remove('hidden');
-}
-
-function closeAddModal() {
-  const modal = document.getElementById('modalAddProduct');
-  if (modal) modal.classList.add('hidden');
-  document.getElementById('formAddProduct')?.reset();
-}
-
-async function handleCreateProduct(e) {
-  e.preventDefault();
-  const form = e.target;
-  const btn = document.getElementById('btnSubmitAdd');
-
-  const payload = {
-    nama: form.nama.value.trim(),
-    penulis: form.penulis.value.trim(),
-    kategori_id: Number(form.kategori_id.value),
-    tahun: Number(form.tahun.value || 2024),
-    lokasi_rak: form.lokasi_rak.value.trim(),
-    deskripsi: form.deskripsi.value.trim()
-  };
-
-  try {
-    if (btn) {
-      btn.disabled = true;
-      btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Menyimpan...`;
-    }
-
-    const res = await fetch('/api/produk', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-
-    const data = await res.json();
-
-    if (res.ok) {
-      showToast('Berhasil Ditambahkan!', 'Buku baru berhasil tersimpan ke database MySQL.');
-      closeAddModal();
-      // Muat ulang data terbaru dari backend database
-      await loadBooksData();
-      renderKatalogCards(allBooks);
-      updateTotalHeader();
-    } else {
-      alert(`Gagal: ${data.message || 'Terjadi kesalahan saat menambahkan buku'}`);
-    }
-  } catch (err) {
-    alert(`Error: ${err.message}`);
-  } finally {
-    if (btn) {
-      btn.disabled = false;
-      btn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i><span>Simpan ke Database</span>`;
-    }
-  }
-}
-
-// ========================================================================
-// 3. OPERASI CRUD: UPDATE (UBAH DATA BUKU DI DATABASE)
-// ========================================================================
-async function openEditModal(bookId) {
-  try {
-    const res = await fetch(`/api/produk/${bookId}`);
-    const result = await res.json();
-    const book = result.data || result;
-
-    if (!book) {
-      alert('Data buku tidak ditemukan di database.');
-      return;
-    }
-
-    document.getElementById('editBookId').value = book.id;
-    document.getElementById('editNama').value = book.nama || book.title || '';
-    document.getElementById('editPenulis').value = book.penulis || book.author || '';
-    document.getElementById('editKategoriId').value = book.kategori_id || '1';
-    document.getElementById('editStatus').value = book.status || 'Tersedia';
-    document.getElementById('editLokasiRak').value = book.lokasi_rak || book.lokasiRak || 'Rak Umum';
-    document.getElementById('editTahun').value = book.tahun || 2024;
-    document.getElementById('editDeskripsi').value = book.deskripsi || book.description || '';
-
-    const modal = document.getElementById('modalEditProduct');
-    if (modal) modal.classList.remove('hidden');
-  } catch (err) {
-    alert(`Gagal memuat data buku: ${err.message}`);
-  }
-}
-
-function closeEditModal() {
-  const modal = document.getElementById('modalEditProduct');
-  if (modal) modal.classList.add('hidden');
-}
-
-async function handleUpdateProduct(e) {
-  e.preventDefault();
-  const form = e.target;
-  const bookId = document.getElementById('editBookId').value;
-  const btn = document.getElementById('btnSubmitEdit');
-
-  const payload = {
-    nama: form.nama.value.trim(),
-    penulis: form.penulis.value.trim(),
-    kategori_id: Number(form.kategori_id.value),
-    status: form.status.value,
-    lokasi_rak: form.lokasi_rak.value.trim(),
-    tahun: Number(form.tahun.value || 2024),
-    deskripsi: form.deskripsi.value.trim()
-  };
-
-  try {
-    if (btn) {
-      btn.disabled = true;
-      btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Menyimpan...`;
-    }
-
-    const res = await fetch(`/api/produk/${bookId}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-
-    const data = await res.json();
-
-    if (res.ok) {
-      showToast('Perubahan Disimpan!', 'Data buku telah berhasil diperbarui di database MySQL.');
-      closeEditModal();
-      await loadBooksData();
-      renderKatalogCards(allBooks);
-    } else {
-      alert(`Gagal memperbarui: ${data.message || 'Terjadi kesalahan'}`);
-    }
-  } catch (err) {
-    alert(`Error: ${err.message}`);
-  } finally {
-    if (btn) {
-      btn.disabled = false;
-      btn.innerHTML = `<i class="fa-solid fa-check"></i><span>Simpan Perubahan</span>`;
-    }
-  }
-}
-
-// ========================================================================
-// 4. OPERASI CRUD: DELETE (HAPUS DATA BUKU DARI DATABASE)
-// ========================================================================
-function openDeleteModal(bookId, bookTitle) {
-  pendingDeleteId = bookId;
-  const modal = document.getElementById('modalDeleteProduct');
-  const titleEl = document.getElementById('deleteBookTitle');
-  if (titleEl) titleEl.textContent = `"${bookTitle}"`;
-  if (modal) modal.classList.remove('hidden');
-
-  const btnConfirm = document.getElementById('btnConfirmDelete');
-  if (btnConfirm) {
-    btnConfirm.onclick = executeDeleteProduct;
-  }
-}
-
-function closeDeleteModal() {
-  const modal = document.getElementById('modalDeleteProduct');
-  if (modal) modal.classList.add('hidden');
-  pendingDeleteId = null;
-}
-
-async function executeDeleteProduct() {
-  if (!pendingDeleteId) return;
-
-  const btn = document.getElementById('btnConfirmDelete');
-  try {
-    if (btn) {
-      btn.disabled = true;
-      btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Menghapus...`;
-    }
-
-    const res = await fetch(`/api/produk/${pendingDeleteId}`, {
-      method: 'DELETE'
-    });
-
-    const data = await res.json();
-
-    if (res.ok) {
-      // Hapus kartu buku dari DOM
-      const card = document.getElementById(`card-${pendingDeleteId}`);
-      if (card) card.remove();
-
-      showToast('Buku Dihapus!', 'Data buku telah dihapus secara permanen dari database MySQL.');
-      closeDeleteModal();
-      await loadBooksData();
-      updateTotalHeader();
-    } else {
-      alert(`Gagal menghapus: ${data.message || 'Terjadi kesalahan'}`);
-    }
-  } catch (err) {
-    alert(`Error: ${err.message}`);
-  } finally {
-    if (btn) {
-      btn.disabled = false;
-      btn.innerHTML = `Ya, Hapus Data`;
-    }
-  }
-}
-
-function updateTotalHeader() {
-  const headerCount = document.getElementById('totalBooksHeader');
-  const pillCount = document.getElementById('bookCountPill');
-  if (headerCount) headerCount.textContent = allBooks.length;
-  if (pillCount) pillCount.textContent = `${allBooks.length} buku`;
-}
-
-// ========================================================================
-// 5. DETAIL MODAL (READ DETAIL)
-// ========================================================================
+// Detail Modal (Melihat rincian produk)
 async function openDetailModal(bookId) {
   try {
     const res = await fetch(`/api/produk/${bookId}`);
@@ -370,7 +130,7 @@ async function openDetailModal(bookId) {
 
     if (!book) return;
 
-    document.getElementById('detailKode').textContent = `${book.kode || ''} • ID: ${book.id}`;
+    document.getElementById('detailKode').textContent = book.kode || `BOK-${book.id}`;
     document.getElementById('detailTitle').textContent = book.nama || book.title;
     document.getElementById('detailAuthor').textContent = book.penulis || book.author;
     document.getElementById('detailCategory').textContent = book.kategori || book.category || 'Umum';
@@ -410,118 +170,7 @@ function showToast(title, desc) {
   }, 3000);
 }
 
-// ========================================================================
-// 6. REST API TESTER MODAL (PENGUJIAN ENDPOINT CRUD WEEK 7 / BERKELANJUTAN)
-// ========================================================================
-function openApiTesterModal() {
-  const modal = document.getElementById('apiTesterModal');
-  if (modal) modal.classList.remove('hidden');
-}
-
-function closeApiTesterModal() {
-  const modal = document.getElementById('apiTesterModal');
-  if (modal) modal.classList.add('hidden');
-}
-
-async function testApiEndpoint(endpoint, method = 'GET', body = null) {
-  const statusEl = document.getElementById('apiModalStatus');
-  const latencyEl = document.getElementById('apiModalLatency');
-  const jsonEl = document.getElementById('apiModalJson');
-  if (!statusEl || !jsonEl) return;
-
-  statusEl.textContent = `Memanggil ${method} ${endpoint}...`;
-  jsonEl.textContent = 'Menunggu data dari backend database...';
-
-  const t0 = performance.now();
-  try {
-    const options = { method, headers: {} };
-    if (body) {
-      options.headers['Content-Type'] = 'application/json';
-      options.body = JSON.stringify(body);
-    }
-
-    const res = await fetch(endpoint, options);
-    const ms = Math.round(performance.now() - t0);
-    const data = await res.json();
-
-    statusEl.innerHTML = `<span class="text-emerald-400 font-bold">HTTP ${res.status} ${res.statusText || 'OK'}</span>`;
-    if (latencyEl) latencyEl.textContent = `${ms} ms`;
-    jsonEl.textContent = JSON.stringify(data, null, 2);
-  } catch (err) {
-    statusEl.innerHTML = `<span class="text-rose-400 font-bold">Gagal Request</span>`;
-    jsonEl.textContent = `Error: ${err.message}`;
-  }
-}
-
-let lastCreatedTestId = null;
-
-// Test POST /api/produk
-async function testApiCreateProduct() {
-  const sample = {
-    nama: `Buku Uji CRUD Database ${Math.floor(100 + Math.random() * 900)}`,
-    penulis: 'Rizqi Maulana Fitrah',
-    kategori_id: 6,
-    tahun: 2024,
-    lokasi_rak: 'Rak Test-01',
-    deskripsi: 'Data buku uji untuk memverifikasi endpoint POST /api/produk ke database MySQL.'
-  };
-
-  const statusEl = document.getElementById('apiModalStatus');
-  const latencyEl = document.getElementById('apiModalLatency');
-  const jsonEl = document.getElementById('apiModalJson');
-
-  statusEl.textContent = 'Memanggil POST /api/produk...';
-  jsonEl.textContent = 'Menyimpan data uji ke MySQL...';
-
-  const t0 = performance.now();
-  try {
-    const res = await fetch('/api/produk', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(sample)
-    });
-    const ms = Math.round(performance.now() - t0);
-    const data = await res.json();
-
-    if (data.data?.id) lastCreatedTestId = data.data.id;
-
-    statusEl.innerHTML = `<span class="text-emerald-400 font-bold">HTTP ${res.status} Created</span>`;
-    if (latencyEl) latencyEl.textContent = `${ms} ms`;
-    jsonEl.textContent = JSON.stringify(data, null, 2);
-
-    await loadBooksData();
-    renderKatalogCards(allBooks);
-    updateTotalHeader();
-  } catch (err) {
-    statusEl.innerHTML = `<span class="text-rose-400 font-bold">Error</span>`;
-    jsonEl.textContent = `Error: ${err.message}`;
-  }
-}
-
-// Test PUT /api/produk/1
-async function testApiUpdateProduct() {
-  const updatePayload = {
-    lokasi_rak: 'Rak TI-Updated',
-    deskripsi: `Diperbarui melalui REST API Console pada ${new Date().toLocaleTimeString()} WIB`
-  };
-  await testApiEndpoint('/api/produk/1', 'PUT', updatePayload);
-  await loadBooksData();
-  renderKatalogCards(allBooks);
-}
-
-// Test DELETE /api/produk/:id
-async function testApiDeleteLatest() {
-  const idToDelete = lastCreatedTestId || (allBooks.length > 0 ? allBooks[allBooks.length - 1].id : 1);
-  await testApiEndpoint(`/api/produk/${idToDelete}`, 'DELETE');
-  lastCreatedTestId = null;
-  await loadBooksData();
-  renderKatalogCards(allBooks);
-  updateTotalHeader();
-}
-
-// ========================================================================
-// 7. INTERAKSI KALENDER & LOG PEMINJAMAN
-// ========================================================================
+// 6. Interaksi kalender dan log peminjaman
 function setupCalendarInteraction() {
   const daysGrid = document.getElementById('calendarDaysGrid');
   const startDateInput = document.getElementById('borrowStartDate');

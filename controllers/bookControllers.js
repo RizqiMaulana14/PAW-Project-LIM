@@ -1,8 +1,4 @@
-/**
- * Book Controller (kompatibilitas dengan alias)
- * Menggunakan model database terpusat di models/productModel.js
- */
-
+// Re-ekspor fungsi controller produk untuk alias rute buku
 export {
   getProduk as getBooks,
   getProdukById as getBookById,

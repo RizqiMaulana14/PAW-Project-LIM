@@ -11,7 +11,7 @@
           <span class="text-lg font-bold text-white font-heading">LIM Project</span>
         </div>
         <p class="text-sm text-slate-400 leading-relaxed mb-4">
-          Library Integrated Management (LIM) adalah sistem manajemen sirkulasi perpustakaan berbasis web dengan dukungan REST API dan arsitektur Model-View-Controller (MVC).
+          Library Integrated Management (LIM) adalah sistem manajemen sirkulasi perpustakaan berbasis web dengan arsitektur Model-View-Controller (MVC).
         </p>
         <div class="flex items-center space-x-2 text-xs text-slate-400">
           <span class="inline-flex items-center px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
@@ -48,19 +48,19 @@
         </ul>
       </div>
 
-      <!-- Kolom 3: Endpoints & Navigasi Cepat -->
+      <!-- Kolom 3: Layanan Perpustakaan -->
       <div>
         <h4 class="text-sm font-semibold uppercase tracking-wider text-slate-200 mb-3">
-          <i class="fa-solid fa-network-wired text-indigo-400 mr-2"></i>Endpoints Week 7
+          <i class="fa-solid fa-layer-group text-indigo-400 mr-2"></i>Layanan Pustaka
         </h4>
-        <div class="space-y-2 text-xs font-mono">
-          <a href="/api/status" target="_blank" class="block p-2 rounded-lg bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 text-slate-300 hover:text-white transition-colors">
-            <span class="text-emerald-400 font-bold">GET</span> /api/status
-            <span class="block text-[11px] text-slate-500 font-sans mt-0.5">Response JSON status server & aplikasi</span>
+        <div class="space-y-2 text-xs">
+          <a href="/katalog" class="block p-2 rounded-lg bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 text-slate-300 hover:text-white transition-colors">
+            <span class="font-semibold text-slate-200">Katalog Buku Digital</span>
+            <span class="block text-[11px] text-slate-500 mt-0.5">Penelusuran dan peminjaman koleksi buku</span>
           </a>
-          <a href="/api/produk" target="_blank" class="block p-2 rounded-lg bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 text-slate-300 hover:text-white transition-colors">
-            <span class="text-emerald-400 font-bold">GET</span> /api/produk
-            <span class="block text-[11px] text-slate-500 font-sans mt-0.5">Response JSON array koleksi produk/buku</span>
+          <a href="/log-peminjaman" class="block p-2 rounded-lg bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 text-slate-300 hover:text-white transition-colors">
+            <span class="font-semibold text-slate-200">Riwayat Peminjaman</span>
+            <span class="block text-[11px] text-slate-500 mt-0.5">Pantau status pengembalian & jatuh tempo</span>
           </a>
         </div>
       </div>

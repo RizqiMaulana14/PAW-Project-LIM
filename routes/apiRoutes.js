@@ -1,8 +1,4 @@
-/**
- * API Routes - Endpoint REST API Operasi CRUD
- * Sesuai arsitektur MVC - Folder routes/
- */
-
+// Rute REST API CRUD dengan validasi JOI dan Sequelize ORM
 import express from 'express';
 import {
   getStatus,
@@ -16,52 +12,58 @@ import {
   createPeminjaman,
   cancelPeminjaman
 } from '../controllers/apiControllers.js';
+import {
+  validate,
+  createProductSchema,
+  updateProductSchema,
+  productIdParamSchema,
+  createLoanSchema,
+  loanIdParamSchema
+} from '../middlewares/validate.js';
 
 const router = express.Router();
 
-/**
- * Status Server & Database
- */
+// GET /api/status - Status server dan koneksi database
 router.get('/status', getStatus);
 
-/**
- * ENDPOINTS CRUD UTAMA PROJECT (Resource: produk / buku)
- */
-// 1. READ ALL: Mengambil seluruh data produk dari database
+// 1. GET /api/produk - Mengambil seluruh data produk
 router.get('/produk', getProduk);
 
-// 2. READ ONE: Mengambil detail satu data berdasarkan ID
-router.get('/produk/:id', getProdukById);
+// 2. GET /api/produk/:id - Mengambil detail satu data berdasarkan ID dengan validasi param
+router.get('/produk/:id', validate(productIdParamSchema, 'params'), getProdukById);
 
-// 3. CREATE: Menambahkan data baru ke dalam database
-router.post('/produk', createProduk);
+// 3. POST /api/produk - Menambahkan data baru dengan validasi body JOI
+router.post('/produk', validate(createProductSchema, 'body'), createProduk);
 
-// 4. UPDATE: Memperbarui data berdasarkan ID di database
-router.put('/produk/:id', updateProduk);
+// 4. PUT /api/produk/:id - Memperbarui data dengan validasi param dan body JOI
+router.put(
+  '/produk/:id',
+  validate(productIdParamSchema, 'params'),
+  validate(updateProductSchema, 'body'),
+  updateProduk
+);
 
-// 5. DELETE: Menghapus data berdasarkan ID dari database
-router.delete('/produk/:id', deleteProduk);
+// 5. DELETE /api/produk/:id - Menghapus data berdasarkan ID dengan validasi param JOI
+router.delete('/produk/:id', validate(productIdParamSchema, 'params'), deleteProduk);
 
-/**
- * Kategori Endpoint
- */
+// GET /api/kategori - Mengambil daftar seluruh kategori
 router.get('/kategori', getKategori);
 
-/**
- * Log Peminjaman Endpoints
- */
+// GET & POST /api/peminjaman - Transaksi dan riwayat peminjaman
 router.get('/peminjaman', getPeminjaman);
-router.post('/peminjaman', createPeminjaman);
-router.delete('/peminjaman/:id', cancelPeminjaman);
+router.post('/peminjaman', validate(createLoanSchema, 'body'), createPeminjaman);
+router.delete('/peminjaman/:id', validate(loanIdParamSchema, 'params'), cancelPeminjaman);
 
-
-/**
- * Rute Kompatibilitas Alias (/api/books)
- */
+// Rute alias (/api/books) untuk kompatibilitas
 router.get('/books', getProduk);
-router.get('/books/:id', getProdukById);
-router.post('/books', createProduk);
-router.put('/books/:id', updateProduk);
-router.delete('/books/:id', deleteProduk);
+router.get('/books/:id', validate(productIdParamSchema, 'params'), getProdukById);
+router.post('/books', validate(createProductSchema, 'body'), createProduk);
+router.put(
+  '/books/:id',
+  validate(productIdParamSchema, 'params'),
+  validate(updateProductSchema, 'body'),
+  updateProduk
+);
+router.delete('/books/:id', validate(productIdParamSchema, 'params'), deleteProduk);
 
 export default router;

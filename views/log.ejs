@@ -3,36 +3,26 @@
 <head>
   <%- include('partials/head') %>
 </head>
-<body class="bg-[#f8f9fa] text-slate-800 font-sans antialiased selection:bg-slate-900 selection:text-white min-h-screen">
+<body class="bg-[#f8f9fa] text-slate-800 font-sans antialiased selection:bg-slate-900 selection:text-white min-h-screen w-full overflow-x-hidden">
 
-  <div class="flex flex-col md:flex-row min-h-screen">
+  <div class="flex flex-col md:flex-row min-h-screen w-full max-w-full overflow-x-hidden">
     <!-- Sidebar Navigasi -->
     <%- include('partials/sidebar') %>
 
     <!-- Konten Utama: 3 · Log Peminjaman -->
-    <main class="flex-grow p-6 sm:p-10 lg:p-12 max-w-7xl mx-auto w-full space-y-8">
+    <main class="flex-1 min-w-0 p-6 sm:p-10 lg:p-12 max-w-7xl mx-auto space-y-8">
       
-      <!-- Header & Counter Card -->
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div class="space-y-1">
-          <span class="text-[11px] font-bold tracking-widest text-slate-400 uppercase">
-            Aktivitasmu
-          </span>
-          <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight font-heading">
-            Log Peminjaman
-          </h1>
-          <p class="text-sm text-slate-500">
-            Pantau status dan kelola semua buku yang sedang kamu pinjam.
-          </p>
-        </div>
-
-        <!-- Box Penghitung Buku Aktif (Sesuai Wireframe) -->
-        <div class="bg-white border border-slate-200 rounded-2xl px-6 py-4 shadow-sm text-right shrink-0 min-w-[120px]">
-          <div class="text-3xl font-extrabold text-slate-900 font-heading leading-tight" id="activeLoanCounter">
-            <%= activeLoans.length %>
-          </div>
-          <span class="text-xs text-slate-400 font-medium">buku aktif</span>
-        </div>
+      <!-- Header -->
+      <div class="space-y-1">
+        <span class="text-[11px] font-bold tracking-widest text-slate-400 uppercase">
+          Aktivitasmu
+        </span>
+        <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight font-heading">
+          Log Peminjaman
+        </h1>
+        <p class="text-sm text-slate-500">
+          Pantau status dan kelola semua buku yang sedang kamu pinjam.
+        </p>
       </div>
 
       <!-- Tab Navigasi: Sedang Dipinjam & Riwayat -->
@@ -212,9 +202,6 @@
       </div>
     </div>
   </div>
-
-  <!-- Modal REST API Console Week 7 -->
-  <%- include('partials/apiModal') %>
 
   <!-- Scripts -->
   <script src="/index.js"></script>

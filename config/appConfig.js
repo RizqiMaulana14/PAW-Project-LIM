@@ -1,8 +1,4 @@
-/**
- * Konfigurasi Utama Aplikasi LIM (Library Integrated Management)
- * Sesuai arsitektur MVC - Folder config/
- */
-
+// Konfigurasi utama aplikasi dan informasi kelompok
 import 'dotenv/config';
 
 export const appConfig = {
@@ -13,9 +9,10 @@ export const appConfig = {
   env: process.env.NODE_ENV || 'development',
   apiPrefix: '/api',
   db: {
+    dialect: process.env.DB_DIALECT || 'postgres',
     host: process.env.DB_HOST || '127.0.0.1',
-    port: Number(process.env.DB_PORT || 3306),
-    user: process.env.DB_USER || 'root',
+    port: Number(process.env.DB_PORT || 5432),
+    user: process.env.DB_USER || 'postgres',
     name: process.env.DB_NAME || 'db_lim_library'
   },
   groupInfo: {
