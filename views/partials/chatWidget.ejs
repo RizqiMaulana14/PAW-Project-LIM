@@ -1,0 +1,303 @@
+<!-- ======================================================================== -->
+<!-- WIDGET ASISTEN AI PERPUSTAKAAN LIM (Google Gemini Powered)                -->
+<!-- ======================================================================== -->
+
+<!-- Tombol Floating Buka Chatbot -->
+<div id="aiChatToggleWrapper" class="fixed bottom-6 right-6 z-40">
+  <button 
+    id="btnOpenAiChat"
+    onclick="toggleAiChat()" 
+    class="group flex items-center space-x-2.5 px-4 py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-full shadow-2xl shadow-slate-900/30 border border-slate-700/50 transition-all duration-300 transform hover:scale-105 active:scale-95"
+    title="Tanya Asisten AI Perpustakaan"
+  >
+    <div class="w-7 h-7 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-400 flex items-center justify-center text-white shadow-sm">
+      <i class="fa-solid fa-wand-magic-sparkles text-xs animate-pulse"></i>
+    </div>
+    <span class="text-xs font-bold tracking-wide">Tanya Pustaka AI</span>
+    <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+  </button>
+</div>
+
+<!-- Modal / Drawer Jendela Percakapan AI -->
+<div 
+  id="aiChatWindow" 
+  class="fixed bottom-6 right-6 z-50 w-[92vw] sm:w-[400px] h-[560px] max-h-[85vh] bg-white rounded-3xl shadow-2xl border border-slate-200/90 flex flex-col overflow-hidden transition-all duration-300 transform scale-95 opacity-0 pointer-events-none origin-bottom-right"
+>
+  <!-- Header Chatbot -->
+  <div class="px-5 py-4 bg-slate-900 text-white flex items-center justify-between border-b border-slate-800 shrink-0">
+    <div class="flex items-center space-x-3">
+      <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-blue-500 via-indigo-500 to-purple-500 flex items-center justify-center shadow-md">
+        <i class="fa-solid fa-robot text-sm text-white"></i>
+      </div>
+      <div>
+        <div class="flex items-center space-x-1.5">
+          <h4 class="text-sm font-bold font-heading">Asisten Pustaka AI</h4>
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        </div>
+        <p class="text-[10px] text-slate-400 font-medium">Didukung Google Gemini • Real-time Context</p>
+      </div>
+    </div>
+
+    <div class="flex items-center space-x-1">
+      <button 
+        onclick="clearAiChatHistory()" 
+        class="w-8 h-8 rounded-xl hover:bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition-colors text-xs"
+        title="Bersihkan Percakapan"
+      >
+        <i class="fa-solid fa-rotate-right"></i>
+      </button>
+      <button 
+        onclick="toggleAiChat()" 
+        class="w-8 h-8 rounded-xl hover:bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition-colors text-sm"
+        title="Tutup Chat"
+      >
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Area Pesan Percakapan (Scrollable) -->
+  <div id="aiChatMessages" class="flex-1 p-4 overflow-y-auto space-y-3.5 bg-slate-50/50 text-xs">
+    
+    <!-- Pesan Selamat Datang dari AI -->
+    <div class="flex items-start space-x-2.5">
+      <div class="w-7 h-7 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 border border-blue-100 font-bold text-xs mt-0.5">
+        <i class="fa-solid fa-book-sparkles"></i>
+      </div>
+      <div class="bg-white border border-slate-200/80 rounded-2xl rounded-tl-sm p-3.5 shadow-xs text-slate-700 leading-relaxed max-w-[85%] space-y-2">
+        <p>Halo! Saya <strong>Asisten Pustaka AI</strong>. Saya siap membantu Anda menemukan informasi koleksi buku, lokasi rak, sinopsis, atau aturan peminjaman di perpustakaan LIM.</p>
+        <p class="text-slate-500 text-[11px]">Silakan pilih topik cepat atau ketik pertanyaan Anda:</p>
+      </div>
+    </div>
+
+    <!-- Quick Prompt Pills -->
+    <div class="flex flex-wrap gap-1.5 pl-9" id="aiQuickPills">
+      <button 
+        onclick="handleQuickPrompt('Buku apa saja yang sedang tersedia untuk dipinjam?')" 
+        class="px-2.5 py-1 bg-white hover:bg-slate-100 border border-slate-200 rounded-lg text-[11px] text-slate-600 font-medium transition-colors text-left"
+      >
+        📚 Buku yang tersedia?
+      </button>
+      <button 
+        onclick="handleQuickPrompt('Di mana lokasi rak buku Laut Bercerita?')" 
+        class="px-2.5 py-1 bg-white hover:bg-slate-100 border border-slate-200 rounded-lg text-[11px] text-slate-600 font-medium transition-colors text-left"
+      >
+        📍 Lokasi rak Laut Bercerita?
+      </button>
+      <button 
+        onclick="handleQuickPrompt('Berapa hari batas waktu peminjaman buku?')" 
+        class="px-2.5 py-1 bg-white hover:bg-slate-100 border border-slate-200 rounded-lg text-[11px] text-slate-600 font-medium transition-colors text-left"
+      >
+        ⏱️ Aturan durasi pinjam?
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Indikator Loading / Mengetik -->
+  <div id="aiTypingIndicator" class="px-5 py-2 bg-slate-50/80 border-t border-slate-100 hidden flex items-center space-x-2 text-[11px] text-slate-400">
+    <div class="flex space-x-1">
+      <span class="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce"></span>
+      <span class="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce [animation-delay:0.2s]"></span>
+      <span class="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce [animation-delay:0.4s]"></span>
+    </div>
+    <span>Asisten AI sedang berpikir...</span>
+  </div>
+
+  <!-- Input Form -->
+  <div class="p-3 bg-white border-t border-slate-200/80 shrink-0">
+    <form id="aiChatForm" onsubmit="handleSendAiMessage(event)" class="flex items-center space-x-2">
+      <input 
+        type="text" 
+        id="aiChatInput" 
+        maxlength="500"
+        placeholder="Tanya seputar koleksi buku perpustakaan..."
+        class="flex-1 px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:bg-white transition-all"
+        autocomplete="off"
+      >
+      <button 
+        type="submit" 
+        id="btnSendAiChat"
+        class="w-10 h-10 rounded-2xl bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white flex items-center justify-center transition-all shadow-sm shrink-0"
+        title="Kirim Pesan"
+      >
+        <i class="fa-solid fa-paper-plane text-xs"></i>
+      </button>
+    </form>
+    <div class="flex items-center justify-between px-1 mt-1.5 text-[10px] text-slate-400">
+      <span>AI terbatas pada domain perpustakaan LIM</span>
+      <span id="aiCharCount">0/500</span>
+    </div>
+  </div>
+</div>
+
+<!-- Logika Interaktif Client-Side Chatbot -->
+<script>
+  let isAiChatOpen = false;
+  let isAiResponding = false;
+
+  function toggleAiChat() {
+    const chatWindow = document.getElementById('aiChatWindow');
+    const toggleBtn = document.getElementById('btnOpenAiChat');
+    isAiChatOpen = !isAiChatOpen;
+
+    if (isAiChatOpen) {
+      chatWindow.classList.remove('scale-95', 'opacity-0', 'pointer-events-none');
+      chatWindow.classList.add('scale-100', 'opacity-100', 'pointer-events-auto');
+      if (toggleBtn) toggleBtn.classList.add('hidden');
+      setTimeout(() => {
+        document.getElementById('aiChatInput')?.focus();
+      }, 200);
+    } else {
+      chatWindow.classList.add('scale-95', 'opacity-0', 'pointer-events-none');
+      chatWindow.classList.remove('scale-100', 'opacity-100', 'pointer-events-auto');
+      if (toggleBtn) toggleBtn.classList.remove('hidden');
+    }
+  }
+
+  function handleQuickPrompt(text) {
+    const input = document.getElementById('aiChatInput');
+    if (input) {
+      input.value = text;
+      document.getElementById('aiChatForm')?.dispatchEvent(new Event('submit', { cancelable: true }));
+    }
+  }
+
+  function clearAiChatHistory() {
+    const container = document.getElementById('aiChatMessages');
+    if (!container) return;
+    
+    // Kembalikan ke sapaan awal
+    container.innerHTML = `
+      <div class="flex items-start space-x-2.5">
+        <div class="w-7 h-7 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 border border-blue-100 font-bold text-xs mt-0.5">
+          <i class="fa-solid fa-book-sparkles"></i>
+        </div>
+        <div class="bg-white border border-slate-200/80 rounded-2xl rounded-tl-sm p-3.5 shadow-xs text-slate-700 leading-relaxed max-w-[85%] space-y-2">
+          <p>Percakapan telah direset. Ada yang ingin Anda tanyakan seputar koleksi buku perpustakaan LIM?</p>
+        </div>
+      </div>
+    `;
+  }
+
+  async function handleSendAiMessage(e) {
+    e.preventDefault();
+    if (isAiResponding) return;
+
+    const input = document.getElementById('aiChatInput');
+    const sendBtn = document.getElementById('btnSendAiChat');
+    const typingIndicator = document.getElementById('aiTypingIndicator');
+    const userMessage = input?.value?.trim();
+
+    if (!userMessage) return;
+
+    // 1. Tampilkan pesan user di UI
+    appendUserBubble(userMessage);
+    input.value = '';
+    updateCharCounter();
+
+    // 2. Set status loading
+    isAiResponding = true;
+    if (sendBtn) sendBtn.disabled = true;
+    if (typingIndicator) typingIndicator.classList.remove('hidden');
+    scrollChatToBottom();
+
+    // Sembunyikan quick pills jika ada
+    const quickPills = document.getElementById('aiQuickPills');
+    if (quickPills) quickPills.style.display = 'none';
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ message: userMessage })
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success && result.data?.reply) {
+        appendAiBubble(result.data.reply);
+      } else {
+        appendAiBubble(result.message || 'Mohon maaf, terjadi kendala saat menghubungi asisten AI.', true);
+      }
+    } catch (err) {
+      appendAiBubble('Gagal terhubung ke server. Periksa koneksi internet Anda atau coba beberapa saat lagi.', true);
+    } finally {
+      isAiResponding = false;
+      if (sendBtn) sendBtn.disabled = false;
+      if (typingIndicator) typingIndicator.classList.add('hidden');
+      scrollChatToBottom();
+      input?.focus();
+    }
+  }
+
+  function appendUserBubble(text) {
+    const container = document.getElementById('aiChatMessages');
+    if (!container) return;
+
+    const bubbleWrapper = document.createElement('div');
+    bubbleWrapper.className = 'flex items-start justify-end space-x-2';
+    bubbleWrapper.innerHTML = `
+      <div class="bg-slate-900 text-white rounded-2xl rounded-tr-sm p-3 max-w-[85%] shadow-sm leading-relaxed text-xs">
+        <p>${escapeHtml(text)}</p>
+      </div>
+    `;
+    container.appendChild(bubbleWrapper);
+    scrollChatToBottom();
+  }
+
+  function appendAiBubble(text, isError = false) {
+    const container = document.getElementById('aiChatMessages');
+    if (!container) return;
+
+    const formattedText = escapeHtml(text).replace(/\n/g, '<br>');
+
+    const bubbleWrapper = document.createElement('div');
+    bubbleWrapper.className = 'flex items-start space-x-2.5';
+    bubbleWrapper.innerHTML = `
+      <div class="w-7 h-7 rounded-xl ${isError ? 'bg-rose-50 text-rose-600 border-rose-100' : 'bg-blue-50 text-blue-600 border-blue-100'} flex items-center justify-center shrink-0 border font-bold text-xs mt-0.5">
+        <i class="fa-solid ${isError ? 'fa-triangle-exclamation' : 'fa-robot'}"></i>
+      </div>
+      <div class="bg-white border ${isError ? 'border-rose-200 text-rose-700 bg-rose-50/40' : 'border-slate-200/80 text-slate-700'} rounded-2xl rounded-tl-sm p-3.5 shadow-xs leading-relaxed max-w-[85%] text-xs">
+        <p>${formattedText}</p>
+      </div>
+    `;
+    container.appendChild(bubbleWrapper);
+    scrollChatToBottom();
+  }
+
+  function scrollChatToBottom() {
+    const container = document.getElementById('aiChatMessages');
+    if (container) {
+      container.scrollTop = container.scrollHeight;
+    }
+  }
+
+  function escapeHtml(text) {
+    const map = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#039;'
+    };
+    return text.replace(/[&<>"']/g, m => map[m]);
+  }
+
+  function updateCharCounter() {
+    const input = document.getElementById('aiChatInput');
+    const counter = document.getElementById('aiCharCount');
+    if (input && counter) {
+      counter.textContent = `${input.value.length}/500`;
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const input = document.getElementById('aiChatInput');
+    if (input) {
+      input.addEventListener('input', updateCharCounter);
+    }
+  });
+</script>

@@ -7,6 +7,7 @@ import { syncDatabase } from './models/index.js';
 import logger from './middlewares/logger.js';
 import apiRoutes from './routes/apiRoutes.js';
 import webRoutes from './routes/webRoutes.js';
+import chatRoutes from './routes/chat.routes.js';
 
 const __dirname = import.meta.dirname;
 
@@ -30,6 +31,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Mounting rute web dan REST API
 app.use('/', webRoutes);
 app.use(appConfig.apiPrefix || '/api', apiRoutes);
+app.use(appConfig.apiPrefix || '/api', chatRoutes);
 
 // Handler 404 Not Found
 app.use((req, res) => {
